@@ -1,0 +1,87 @@
+### Начало проэкта
+mkdir <folder_project_name> && cd <folder_project_name>
+virtualenv venv
+source venv/bin/activate
+mkdir app && cd app
+git init
+git status
+### После окончания разработки проэкта
+pip freeze > requirement.txt
+git commit -am "finisch commit"
+git remote add origin git@github.com:makotakara/folder_project_name.git
+git branch -M main
+git push -u origin main
+
+
+
+### Для разворачивания проэкта на другой сервере
+mkdir <folder_project_name> && cd <folder_project_name>
+virtualenv venv
+source venv/bin/activate
+git clone https://github.com/makotakara/folder_project_name.git
+mv <folder_project_name> app && cd app
+pip install -r requirement.txt
+
+
+### После внесения изменений в удаленный репозиторий, скачать изменения
+git fetch origin
+git merge origin/main
+
+
+# Запустить скрипт в фоне
+# Создать новую сессию
+screen -S nginx_log_parser python3 main.py
+# Запустить команду
+python3 main.py
+# отключиться от сессии
+Ctrl + a, d
+# Посмотреть список запущеных процессов в фоне
+screen -ls
+# Переключиться на процесс по имени
+screen -r apache_log_parser
+
+
+##############################
+# Насторйка WSGI - запуск приложения с помощью сервиса
+# https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04-ru
+
+# Создание точки входа WSGI
+vi <folder_project_name>/app/wsgi.py
+
+#--------------------
+
+from main import app
+
+if __name__ == "__main__":
+    app.run()
+
+#--------------------
+
+
+# Создание сервиса
+vi /etc/systemd/system/nginx_log_parser.service
+
+
+[Unit]
+Description=Gunicorn instance to serve nginx_log_parser
+After=network.target
+
+[Service]
+User=app_user
+Group=www-data
+WorkingDirectory=/home/app_user/project/nginx_log_parser/app
+Environment="PATH=/home/app_user/project/nginx_log_parser/venv/bin/"
+ExecStart=/home/app_user/project/nginx_log_parser/venv/bin/gunicorn --bind 0.0.0.0:5000 wsgi:app
+
+[Install]
+WantedBy=multi-user.target
+
+# Запуск
+sudo systemctl start nginx_log_parser
+sudo systemctl enable nginx_log_parser
+sudo systemctl status nginx_log_parser
+
+##############################
+
+
+
