@@ -24,8 +24,7 @@ pip install -r requirement.txt
 
 
 ### После внесения изменений в удаленный репозиторий, скачать изменения
-git fetch origin
-git merge origin/main
+git pull origin
 
 
 # Запустить скрипт в фоне
@@ -77,11 +76,24 @@ ExecStart=/home/app_user/project/nginx_log_parser/venv/bin/gunicorn --bind 0.0.0
 WantedBy=multi-user.target
 
 # Запуск
-sudo systemctl start nginx_log_parser
+sudo systemctl start  nginx_log_parser
 sudo systemctl enable nginx_log_parser
 sudo systemctl status nginx_log_parser
 
 ##############################
 
+# Создать таблицу БД через python
+import models
+from app import db
+db.create_all()
 
+# Записать пост в БД через python
+from models import Post
+from app import db
+p3 = Post(title='Tenth post', body='Tenth podt body')
+db.session.add(p3)
+db.session.commit()
 
+# Получить все посты из БД
+from models import Post
+p = Post.query.all()
