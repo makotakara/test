@@ -13,7 +13,8 @@ git remote -v
 git branch -M main
 git push -u origin main
 
-
+### Если github запрашивает пароль, авторизация по ключу
+git remote set-url origin git@github.com:makotakara/flask_blog.git 
 
 ### Для разворачивания проэкта на другой сервере
 mkdir <folder_project_name> && cd <folder_project_name>
